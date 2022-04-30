@@ -36,7 +36,7 @@ app.use(express.json({ extended: false }))
 app.get('/', (req, res) => {
   res.json({
     msg: 'Welcome to the netzillia.com',
-    website: 'netzillia.com',
+    website: 'https://netzillia.com/',
   })
 })
 
