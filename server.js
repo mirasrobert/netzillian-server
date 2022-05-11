@@ -52,6 +52,7 @@ app.use('/api/cards', require('./routes/api/cards'))
 app.use('/api/checklists', require('./routes/api/checklists'))
 app.use('/api/payments', require('./routes/api/payments'))
 app.use('/api/contacts', require('./routes/api/contact'))
+app.use('/api/transactions', require('./routes/api/transactions'))
 
 app.get('/api/config/paypal', (req, res) => {
   res.send(process.env.PAYPAL_CLIENT_ID)
