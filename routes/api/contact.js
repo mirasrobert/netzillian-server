@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const nodemailer = require('nodemailer')
-const moment = require('moment')
+const moment = require('moment-timezone')
 const auth = require('../../middleware/auth')
 const { check, validationResult } = require('express-validator')
 
@@ -115,7 +115,9 @@ router.post(
     <br>
     <p>This message is to confirm that your plan purchase has been successful. The details of the  purchase are below:</p>
     <p>
-      Registration Date: ${moment(req.body.date).format('LLLL')}
+      Registration Date: ${moment
+        .tz(req.body.date, 'Asia/Manila')
+        .format('LLLL')}
     </p>
     <p>
       Plan: ${req.body.plan}
