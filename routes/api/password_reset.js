@@ -8,7 +8,7 @@ const PasswordReset = require('../../models/PasswordReset')
 const makeToken = require('../../helper/helper')
 
 router.post('/', async (req, res) => {
-  const token = makeToken(30)
+  const token = makeToken(80)
 
   const { email } = req.body
 
@@ -130,7 +130,7 @@ router.post('/reset', async (req, res) => {
     if (!user) {
       return res.status(400).json({
         status: 'fail',
-        message: 'No User Found',
+        message: 'No User Found. Please resubmit your request',
       })
     }
 
