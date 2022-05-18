@@ -36,7 +36,7 @@ router.post('/', async (req, res) => {
   })
 
   // Generate a url
-  const url = `${process.env.CLIENT_WEBSITE_URL}/reset/${token}`
+  const url = `${process.env.CLIENT_WEBSITE_URL}/reset/${token}/email/${email}`
 
   // Send an email
   let mailTransporter = nodemailer.createTransport({
@@ -95,10 +95,11 @@ router.post('/', async (req, res) => {
 
 router.post('/reset', async (req, res) => {
   try {
-    const { token, password } = req.body
+    const { email, token, password } = req.body
 
+    // Get password reset by token
     const passwordReset = await PasswordReset.findOne({
-      email: passwordReset.email,
+      email: email,
     })
 
     // check if user has reset password request
