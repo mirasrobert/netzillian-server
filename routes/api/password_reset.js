@@ -117,7 +117,9 @@ router.post('/reset', async (req, res) => {
     const isMatch = await bcrypt.compare(token, passwordReset.token)
     if (!isMatch) {
       return res.status(400).json({
-        errors: [{ msg: 'Invalid Token' }],
+        status: 'fail',
+        message:
+          'Your password reset requst is expired. Please resubmit your request',
       })
     }
 
@@ -133,6 +135,11 @@ router.post('/reset', async (req, res) => {
     }
 
     user.password = await bcrypt.hash(password, await bcrypt.genSalt(10))
+
+    await user.save()
+
+    // Delete the token
+    await PasswordReset.deleteOne({ email: email })
 
     return res.status(200).json({
       status: 'success',
