@@ -53,6 +53,7 @@ app.use('/api/checklists', require('./routes/api/checklists'))
 app.use('/api/payments', require('./routes/api/payments'))
 app.use('/api/contacts', require('./routes/api/contact'))
 app.use('/api/transactions', require('./routes/api/transactions'))
+app.use('/api/reset-password', require('./routes/api/password_reset'))
 
 app.get('/api/config/paypal', (req, res) => {
   res.send(process.env.PAYPAL_CLIENT_ID)
