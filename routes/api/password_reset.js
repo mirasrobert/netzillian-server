@@ -24,13 +24,17 @@ router.post('/', async (req, res) => {
   }
 
   // Delete any existing reset tokens
-  await PasswordReset.deleteOne({ email: email })
+  const deleteExistingToken = await PasswordReset.deleteOne({ email: email })
+
+  if (deleteExistingToken.deletedCount > 0) {
+    console.log('Deleted existing token')
+  }
 
   // Create new reset token
   await PasswordReset.create({
     email,
     token: await bcrypt.hash(token, await bcrypt.genSalt(10)),
-    createdAt: Date.now() + 1000 * 60 * 60 * 24,
+    createdAt: Date.now() + 1000 * 60 * 60,
   })
 
   // Generate a url
@@ -61,12 +65,13 @@ router.post('/', async (req, res) => {
 	  </p>
   		<p>
 		  Regards,
+      <br>
 		  Netzillia Team
 		  </p>
 	  `
 
   let details = {
-    from: `Netzillia Co <${sender}>`,
+    from: `Netzillia.com <netzillia@gmail.com>`,
     to: email || 'netzillia@gmail.com',
     subject: `Reset Password Notification`,
     text: 'Netzillia Password Reset',
