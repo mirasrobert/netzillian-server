@@ -24,9 +24,7 @@ router.post('/', async (req, res) => {
   }
 
   // Delete any existing reset tokens
-  await PasswordReset.delete({
-    email: email,
-  })
+  await PasswordReset.deleteOne({ email: email })
 
   // Create new reset token
   await PasswordReset.create({
