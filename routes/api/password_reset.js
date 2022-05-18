@@ -119,7 +119,7 @@ router.post('/reset', async (req, res) => {
       return res.status(400).json({
         status: 'fail',
         message:
-          'Your password reset requst is expired. Please resubmit your request',
+          'Your password reset request is expired. Please resubmit your request',
       })
     }
 
