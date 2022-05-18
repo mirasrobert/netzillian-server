@@ -19,7 +19,7 @@ router.post('/', async (req, res) => {
   // If user not found
   if (!user) {
     return res.status(400).json({
-      msg: 'User not found',
+      msg: 'Email does not exist',
     })
   }
 
@@ -147,7 +147,10 @@ router.post('/reset', async (req, res) => {
     })
   } catch (err) {
     console.error(err.message)
-    res.status(500).send('Server error')
+    res.status(500).json({
+      status: 'fail',
+      message: 'Something went wrong with the server, please try again',
+    })
   }
 })
 
