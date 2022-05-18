@@ -88,7 +88,7 @@ router.post('/', async (req, res) => {
     // If Email is Success
     return res.status(200).json({
       status: 'success',
-      message: 'Email Sent',
+      message: 'A password reset has been sent to your email',
     })
   })
 })
