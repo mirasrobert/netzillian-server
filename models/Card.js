@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose');
+const { Schema, model } = require('mongoose')
 
 const CardSchema = new Schema({
   title: {
@@ -7,6 +7,14 @@ const CardSchema = new Schema({
   },
   description: {
     type: String,
+  },
+  startDate: {
+    type: Date,
+    default: null,
+  },
+  dueDate: {
+    type: Date,
+    default: null,
   },
   label: {
     type: String,
@@ -39,6 +47,10 @@ const CardSchema = new Schema({
     required: true,
     default: false,
   },
-});
+  markAsCompleted: {
+    type: Boolean,
+    default: false,
+  },
+})
 
-module.exports = Card = model('card', CardSchema);
+module.exports = Card = model('card', CardSchema)
