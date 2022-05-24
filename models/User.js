@@ -12,10 +12,15 @@ const UserSchema = new Schema({
   },
   password: {
     type: String,
-    required: true,
+    required: false,
   },
   avatar: {
     type: String,
+  },
+  providerId: {
+    type: String,
+    required: false,
+    default: null,
   },
   boards: [
     {

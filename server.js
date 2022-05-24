@@ -66,6 +66,10 @@ app.get('/api/config/paypal', (req, res) => {
   res.send(process.env.PAYPAL_CLIENT_ID)
 })
 
+app.get('/api/config/google', (req, res) => {
+  res.send(process.env.GOOGLE_CLIENT_ID)
+})
+
 // DEPLOY YOUR CLIENT AND BACKEND IN A SEPERATE WEBSITE
 
 /*

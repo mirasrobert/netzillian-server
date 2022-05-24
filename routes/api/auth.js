@@ -1,23 +1,23 @@
-const express = require('express');
-const router = express.Router();
-const bcrypt = require('bcryptjs');
-const auth = require('../../middleware/auth');
-const jwt = require('jsonwebtoken');
-const { check, validationResult } = require('express-validator');
-require('dotenv').config();
+const express = require('express')
+const router = express.Router()
+const bcrypt = require('bcryptjs')
+const auth = require('../../middleware/auth')
+const jwt = require('jsonwebtoken')
+const { check, validationResult } = require('express-validator')
+require('dotenv').config()
 
-const User = require('../../models/User');
+const User = require('../../models/User')
 
 // Get authorized user
 router.get('/', auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select('-password');
-    res.json(user);
+    const user = await User.findById(req.user.id).select('-password')
+    res.json(user)
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+    console.error(err.message)
+    res.status(500).send('Server error')
   }
-});
+})
 
 // Authenticate user & get token
 router.post(
@@ -27,28 +27,28 @@ router.post(
     check('password', 'Password is required').exists(),
   ],
   async (req, res) => {
-    const errors = validationResult(req);
+    const errors = validationResult(req)
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ errors: errors.array() })
     }
 
-    const { email, password } = req.body;
+    const { email, password } = req.body
 
     try {
       // See if user exists
-      let user = await User.findOne({ email });
+      let user = await User.findOne({ email })
       if (!user) {
         return res.status(400).json({
           errors: [{ msg: 'Invalid credentials' }],
-        });
+        })
       }
 
       // Check for email and password match
-      const isMatch = await bcrypt.compare(password, user.password);
+      const isMatch = await bcrypt.compare(password, user.password)
       if (!isMatch) {
         return res.status(400).json({
           errors: [{ msg: 'Invalid credentials' }],
-        });
+        })
       }
 
       // Return jsonwebtoken
@@ -61,15 +61,103 @@ router.post(
         process.env.JWT_SECRET,
         { expiresIn: 360000 },
         (err, token) => {
-          if (err) throw err;
-          res.json({ token });
+          if (err) throw err
+          res.json({ token })
         }
-      );
+      )
     } catch (err) {
-      console.error(err.message);
-      res.status(500).send('Server error');
+      console.error(err.message)
+      res.status(500).send('Server error')
     }
   }
-);
+)
 
-module.exports = router;
+// Get authorized user
+router.get('/', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password')
+    res.json(user)
+  } catch (err) {
+    console.error(err.message)
+    res.status(500).send('Server error')
+  }
+})
+
+// Authenticate user using google & get token
+router.post(
+  '/google',
+  [
+    check('googleId', 'Id is missing').exists(),
+    check('avatar', 'avatar is missing').exists(),
+    check('email', 'Email is required').isEmail(),
+    check('name', 'Name is required').exists(),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() })
+    }
+
+    const { email, googleId, avatar, name } = req.body
+
+    try {
+      // See if user does not exists
+      let user = await User.findOne({ email })
+
+      if (!user) {
+        // Register new user
+        const newUser = new User({
+          name,
+          email,
+          avatar: avatar,
+          providerId: googleId,
+        })
+
+        // Save user to database
+        await newUser.save()
+
+        // Return jsonwebtoken
+        jwt.sign(
+          {
+            user: {
+              id: newUser.id,
+            },
+          },
+          process.env.JWT_SECRET,
+          { expiresIn: 360000 },
+          (err, token) => {
+            if (err) {
+              throw err
+            }
+
+            return res.json({ user: newUser, token })
+          }
+        )
+      }
+
+      // IF user exists
+      // Return jsonwebtoken
+      jwt.sign(
+        {
+          user: {
+            id: user.id,
+          },
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: 360000 },
+        (err, token) => {
+          if (err) {
+            throw err
+          }
+
+          res.json({ token })
+        }
+      )
+    } catch (err) {
+      console.error(err.message)
+      return res.status(500).send('Server error')
+    }
+  }
+)
+
+module.exports = router
