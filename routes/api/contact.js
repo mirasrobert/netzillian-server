@@ -7,6 +7,27 @@ const { check, validationResult } = require('express-validator')
 
 const User = require('../../models/User')
 
+// FOR USING GMAIL SMTP
+
+/*
+     As mentioned in the comments and directly quoted from google:
+
+    `On May 30 2022, you may lose access to apps that are using less secure sign-in technology
+      So the bottom code will probably stop working with Gmail. The solution is to enable 2-Step Verification 
+      and generate Application password, then you can use the generated password to send emails using nodemailer.
+      To do so you need to do the following:`
+
+    1. Go to your google account at https://myaccount.google.com/
+    2. Go to Security
+    3. In "Signing in to Google" section choose 2-Step Verification - here you have to verify yourself, in my case it was with phone number and a confirmation code send as text message. After that you will be able to enabled 2-Step Verification
+    4. Back to Security in "Signing in to Google" section choose App passwords
+    5. From the Select app drop down choose Other (Custom name) and put a name e.g. nodemailer
+    6. A modal dialog will appear with the password. Get that password and use it in your code.
+
+    REFERENCE: https://stackoverflow.com/questions/45478293/username-and-password-not-accepted-when-using-nodemailer
+*/
+
+
 router.post(
   '/',
   [
@@ -24,18 +45,36 @@ router.post(
 
     const { name, subject, sender, message } = req.body
 
+    // SMTP GMAIL
     let mailTransporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
       service: 'gmail',
       secure: false,
       auth: {
         user: process.env.EMAIL_USER || 'netzillia@gmail.com',
-        pass: process.env.EMAIL_PASS || '@netzillia29',
+        pass: process.env.GOOGLE_APP_PASSWORD,
       },
       tls: {
         rejectUnauthorized: false,
       },
     })
+
+
+    // SMTP MAILGUN
+    // let mailTransporter = nodemailer.createTransport({
+    //   host: 'smtp.mailgun.org',
+    //   port: 587,         
+    //   secure: false,
+    //   auth: {
+    //     user: 'postmaster@sandboxfea3d38ee3754dc6b370c211ed989ead.mailgun.org',
+    //     pass: 'd5da483bd4c189caf4d79fb090e9f4bb-50f43e91-80262463'
+    //   },
+    //   tls: {
+    //     rejectUnauthorized: false,
+    //   },
+    // })
+    // Email
+    // email pass = @netzillia29
 
     const output = `<p>
 		Dear NetZillia,
@@ -56,6 +95,7 @@ router.post(
         return res.status(500).json({
           status: 'fail',
           message: 'Email has not been sent',
+          err: process.env.NODE_ENV == 'production' ? null : err
         })
       }
 
@@ -96,18 +136,48 @@ router.post(
       })
     }
 
+    /*
+     As mentioned in the comments and directly quoted from google:
+
+    On May 30 2022, you may lose access to apps that are using less secure sign-in technology
+      So the bottom code will probably stop working with Gmail. The solution is to enable 2-Step Verification and generate Application password, then you can use the generated password to send emails using nodemailer.To do so you need to do the following:
+
+    1. Go to your google account at https://myaccount.google.com/
+    2. Go to Security
+    3. In "Signing in to Google" section choose 2-Step Verification - here you have to verify yourself, in my case it was with phone number and a confirmation code send as text message. After that you will be able to enabled 2-Step Verification
+    4. Back to Security in "Signing in to Google" section choose App passwords
+    5. From the Select app drop down choose Other (Custom name) and put a name e.g. nodemailer
+    6. A modal dialog will appear with the password. Get that password and use it in your code.
+    */
+
     let mailTransporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
       service: 'gmail',
       secure: false,
       auth: {
         user: process.env.EMAIL_USER || 'netzillia@gmail.com',
-        pass: process.env.EMAIL_PASS || '@netzillia29',
+        pass: process.env.GOOGLE_APP_PASSWORD,
       },
       tls: {
         rejectUnauthorized: false,
       },
     })
+
+
+    /*
+    let mailTransporter = nodemailer.createTransport({
+      host: 'smtp.mailgun.org',
+      port: 587,         
+      secure: false,
+      auth: {
+        user: 'postmaster@sandboxfea3d38ee3754dc6b370c211ed989ead.mailgun.org',
+        pass: 'd5da483bd4c189caf4d79fb090e9f4bb-50f43e91-80262463'
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+    })
+    */
 
     const output = `<p>
 		Dear ${user.name},
@@ -151,6 +221,7 @@ router.post(
         return res.status(500).json({
           status: 'fail',
           message: 'Email has not been sent',
+          err: process.env.NODE_ENV == 'production' ? null : err
         })
       }
 
