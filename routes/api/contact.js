@@ -60,19 +60,21 @@ router.post(
     })
 
 
-    // SMTP MAILGUN
-    // let mailTransporter = nodemailer.createTransport({
-    //   host: 'smtp.mailgun.org',
-    //   port: 587,         
-    //   secure: false,
-    //   auth: {
-    //     user: 'postmaster@sandboxfea3d38ee3754dc6b370c211ed989ead.mailgun.org',
-    //     pass: 'd5da483bd4c189caf4d79fb090e9f4bb-50f43e91-80262463'
-    //   },
-    //   tls: {
-    //     rejectUnauthorized: false,
-    //   },
-    // })
+    /*
+    let mailTransporter = nodemailer.createTransport({
+      host: 'smtp.mailgun.org',
+      port: 587,         
+      secure: false,
+      auth: {
+        user: 'MAILGUN-USER-HOST',
+        pass: 'MAILGUN-SMTP-PASSWORD'
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+    })
+    */
+    
     // Email
     // email pass = @netzillia29
 
