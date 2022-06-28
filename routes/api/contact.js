@@ -27,7 +27,6 @@ const User = require('../../models/User')
     REFERENCE: https://stackoverflow.com/questions/45478293/username-and-password-not-accepted-when-using-nodemailer
 */
 
-
 router.post(
   '/',
   [
@@ -59,7 +58,6 @@ router.post(
       },
     })
 
-
     /*
     let mailTransporter = nodemailer.createTransport({
       host: 'smtp.mailgun.org',
@@ -74,7 +72,7 @@ router.post(
       },
     })
     */
-    
+
     // Email
     // email pass = @netzillia29
 
@@ -92,16 +90,79 @@ router.post(
       html: output,
     }
 
+    // Send Email to MYSELF
     mailTransporter.sendMail(details, (err) => {
       if (err) {
         return res.status(500).json({
           status: 'fail',
           message: 'Email has not been sent',
-          err: process.env.NODE_ENV == 'production' ? null : err
+          err: process.env.NODE_ENV == 'production' ? null : err,
         })
       }
 
       console.log('Message sent: %s', details.subject)
+
+      let outputForUSer = `
+      <p>
+       Thank you for contacting our company NETZILLIA. My team will check your concern. You are receiving this email because we haved received your email successfully. Thank you and sorry for inconvenience.
+      </p>`
+
+      let detailsForUser = {
+        from: `Netzillia.com <netzillia@gmail.com>`,
+        to: sender,
+        subject: `Netzillia Contact Request`,
+        text: 'Netzillia Contact Request',
+        html: outputForUSer,
+      }
+
+      // Transporter Email bacck to user
+      mailTransporterFeedback = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        service: 'gmail',
+        secure: false,
+        auth: {
+          user: process.env.EMAIL_USER || 'netzillia@gmail.com',
+          pass: process.env.GOOGLE_APP_PASSWORD,
+        },
+        tls: {
+          rejectUnauthorized: false,
+        },
+      })
+
+      // Send the email back to user
+      mailTransporterFeedback.sendMail(detailsForUser, (err) => {
+        if (err) {
+          return res.status(500).json({
+            status: 'fail',
+            message: 'Email has not been sent',
+            err: process.env.NODE_ENV == 'production' ? null : err,
+          })
+        }
+
+        console.log('Message sent: %s', details.subject)
+
+        // Send Email bacck to user
+        mailTransporterFeedback = nodemailer.createTransport({
+          host: 'smtp.gmail.com',
+          service: 'gmail',
+          secure: false,
+          auth: {
+            user: process.env.EMAIL_USER || 'netzillia@gmail.com',
+            pass: process.env.GOOGLE_APP_PASSWORD,
+          },
+          tls: {
+            rejectUnauthorized: false,
+          },
+        })
+
+        // Send the email
+
+        // If Email is Success
+        return res.status(200).json({
+          status: 'success',
+          message: 'Email Sent',
+        })
+      })
 
       // If Email is Success
       return res.status(200).json({
@@ -165,7 +226,6 @@ router.post(
       },
     })
 
-
     /*
     let mailTransporter = nodemailer.createTransport({
       host: 'smtp.mailgun.org',
@@ -223,7 +283,7 @@ router.post(
         return res.status(500).json({
           status: 'fail',
           message: 'Email has not been sent',
-          err: process.env.NODE_ENV == 'production' ? null : err
+          err: process.env.NODE_ENV == 'production' ? null : err,
         })
       }
 
