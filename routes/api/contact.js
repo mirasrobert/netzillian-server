@@ -139,8 +139,6 @@ router.post(
           })
         }
 
-        console.log('Message sent: %s', details.subject)
-
         // Send Email bacck to user
         mailTransporterFeedback = nodemailer.createTransport({
           host: 'smtp.gmail.com',
